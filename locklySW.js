@@ -1,6 +1,6 @@
 self.addEventListener("fetch", (event) => {
   client.postMessage('Service Worker Registered!');
-}
+});
 
 self.addEventListener("fetch", (event) => {
   event.waitUntil(
