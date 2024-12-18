@@ -1,4 +1,4 @@
-addEventListener("fetch", (event) => {
+self.addEventListener("fetch", (event) => {
   event.waitUntil(
     (async () => {
       // Exit early if we don't have access to the client.
