@@ -13,8 +13,8 @@
           console.log('Service Worker registered with scope:', registration.scope);
         });
       
-        navigator.serviceWorker.addEventListener('message', (event) => {
-          alert(event.data);
+        navigator.serviceWorker.addEventListener("message", (event) => {
+          alert(event.data.msg + ' : ' + event.data.url);
         });
       }
     </script>
