@@ -14,8 +14,9 @@ addEventListener("fetch", (event) => {
       // Send a message to the client.
       client.postMessage({
         msg: "Hey I just got a fetch from you!",
-        url: event.request.url,
+        url: event.request,
       });
-    })(),
+    })()
   );
+  event.respondWith(event.request);
 });
