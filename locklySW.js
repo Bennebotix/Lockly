@@ -1,15 +1,21 @@
-self.addEventListener("install", (event) => {
-  client.postMessage('Service Worker Registered!');
-});
-
-self.addEventListener("fetch", (event) => {
+addEventListener("fetch", (event) => {
   event.waitUntil(
-    clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage(`"${event.request.host}"`);// vs. "${window.location.host}"`);
-      });
-    })
-  );
+    (async () => {
+      // Exit early if we don't have access to the client.
+      // Eg, if it's cross-origin.
+      if (!event.clientId) return;
 
-  event.respondWith(fetch(event.request));
+      // Get the client.
+      const client = await self.clients.get(event.clientId);
+      // Exit early if we don't get the client.
+      // Eg, if it closed.
+      if (!client) return;
+
+      // Send a message to the client.
+      client.postMessage({
+        msg: "Hey I just got a fetch from you!",
+        url: event.request.url,
+      });
+    })(),
+  );
 });
