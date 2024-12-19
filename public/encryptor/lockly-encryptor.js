@@ -34,6 +34,24 @@ function log(message, overwriteLast = false) {
 }
 
 async function encryptZip(file) {
+  const download = async () => {
+    try {
+      const content = await exportZip.generateAsync({ type: "blob" });  // Generate as Blob
+      const url = URL.createObjectURL(content); // Create a URL for the blob
+  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "file.zip"; // Set the desired file name
+      document.body.appendChild(a); // Append to the body
+      a.click(); // Trigger click to download
+      document.body.removeChild(a); // Clean up
+  
+      URL.revokeObjectURL(url); // Free up memory
+    } catch (error) {
+      console.error("Error generating ZIP file:", error);
+    }
+  };
+  
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
@@ -70,9 +88,7 @@ async function encryptZip(file) {
 
     log("Encryption complete!");
 
-    exportZip.generateAsync({ type: "base64" }).then(content => {
-      location.href = "data:application/zip;base64," + content;
-    });
+    downloadZipFile();
   } catch (error) {
     log(`Error during encryption: ${error.message}`);
   }
