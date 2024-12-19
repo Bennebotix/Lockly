@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Decompressor</title>
     <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        
         body {
             background-color: #1e1e1e;
             color: #ffffff;
             font-family: Arial, sans-serif;
-            padding: 0px;
-            margin: 0px;
+            padding: 20px;
         }
         input[type="file"], input[type="password"] {
             margin: 10px 0;
@@ -26,9 +30,13 @@
             color: #eee;
             padding: 10px;
             border-radius: 5px;
-            height: 150px;
+            width: 100dvw;
+            height: 100dvh;
             overflow-y: auto;
             font-family: 'Courier New', Courier, monospace;
+            position: absolute;
+            top: 0px;
+            left: 0px;
         }
         button {
             background-color: #007BFF;
@@ -36,6 +44,9 @@
             border: none;
             padding: 10px 15px;
             cursor: pointer;
+            position: absolute;
+            top: 0px;
+            right: 0px;
         }
     </style>
 </head>
