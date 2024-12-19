@@ -17,7 +17,7 @@ document.querySelector("#encryptBtn").addEventListener("click", async () => {
   if (file.name.endsWith(".zip")) {
     await encryptZip(file);
   } else if (file.name.endsWith(".tar.gz")) {
-    log("TAR.GZ decompression is not implemented in this demo.");
+    log("TAR.GZ decompression is not implemented yet");
   } else {
     log("Unsupported file type. ");
   }
@@ -41,12 +41,12 @@ async function encryptZip(file) {
   
       const a = document.createElement("a");
       a.href = url;
-      a.download = "file.zip"; // Set the desired file name
-      document.body.appendChild(a); // Append to the body
-      a.click(); // Trigger click to download
-      document.body.removeChild(a); // Clean up
+      a.download = "file.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
   
-      URL.revokeObjectURL(url); // Free up memory
+      URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error generating ZIP file:", error);
     }
@@ -88,7 +88,7 @@ async function encryptZip(file) {
 
     log("Encryption complete!");
 
-    downloadZipFile();
+    download();
   } catch (error) {
     log(`Error during encryption: ${error.message}`);
   }
