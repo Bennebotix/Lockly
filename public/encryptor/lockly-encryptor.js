@@ -49,7 +49,7 @@ async function decompressZip(file) {
     clearInterval(dotInterval);
     log("ZIP file decompressed. Contents:");
 
-    const totalEntries = Object.keys(zipContent.files).length;
+    const totalEntries = Object.keys(zipContent.files).filter(relativePath => !relativePath.endsWith('/')).length;
     let processedEntries = 0;
 
     for (const [relativePath, entry] of Object.entries(zipContent.files)) {
@@ -78,7 +78,6 @@ async function decompressZip(file) {
 }
 
 async function save(file, path) {
-  console.log(path);
   await exportZip.file(path, file, { binary: true });
 }
 
