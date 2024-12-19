@@ -105,57 +105,73 @@ async function encryptZip(file) {
   }
 }
 
-async function encryptTarGZ(file) {
+async function encryptTarGZ(file, pwd) {
   async function saveToTar(encryptedData, path) {
-    // Re-compress file
+    const tar = new Tar();
+    tar.addFile(path, encryptedData);
+
+    const tarBlob = await tar.generateAsync({ type: "blob" });
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const compressed = pako.gzip(new Uint8Array(reader.result), { to: 'uint8array' });
+        const compressedBlob = new Blob([compressed], { type: 'application/gzip' });
+        resolve(compressedBlob);
+      };
+      reader.onerror = (error) => {
+        reject(`Error during gzip compression: ${error}`);
+      };
+      reader.readAsArrayBuffer(tarBlob);
+    });
   }
 
-  const download = async () => {
+  const download = async (content) => {
     try {
-      const content = await exportTar.generateAsync({ type: "blob" });
       const url = URL.createObjectURL(content);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = file.name;
+      a.download = file.name.replace('.tar.gz', '.tar.gz'); // Change filename
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
 
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error generating TAR file:", error);
+      console.error("Error downloading encrypted TAR file:", error);
     }
   };
 
   try {
     log("Decompressing...");
-    
-    const tarFiles;
-    await file.then(res => res.arrayBuffer())
-              .then(pako.inflate)
-              .then(arr => arr.buffer)
-              .then(untar)
-              .progress(file => {
-                log(`  - ${file.name} decompresed successfully.`);
-              })
-              .then(files => {
-                tarFiles = files;
-              });
+
+    let tarFiles;
+    await file.arrayBuffer()
+      .then(pako.inflate)
+      .then(arr => arr.buffer)
+      .then(untar)
+      .then(files => {
+        tarFiles = files;
+      });
 
     clearInterval(dotInterval);
     log("Decompression done!");
 
-    let totalEntries = tarFiles.length; // Filter out entries that are folders
+    const totalEntries = Object.keys(files).filter(relativePath => !relativePath.endsWith('/')).length;
     let processedEntries = 0;
+    
+    const encryptedTarBlobs = [];
 
-    for (const entry of tarFiles) {
-      if () { // Make sure entry is not a folder
+    for (const [relativePath, entry] of Object.entries(files)) {
+      if (!relativePath.endsWith('/')) {
         log(`- Encrypting: ${entry.fileName}...`);
         try {
           const entryData = await entry.arrayBuffer();
           const encryptedFile = await encrypt(entryData, pwd);
-          await saveToTar(encryptedFile.encryptedData, entry.fileName);
+          const savedBlob = await saveToTar(encryptedFile.encryptedData, entry.fileName);
+          
+          encryptedTarBlobs.push(savedBlob); // Collect all encrypted blob parts
           log(`  - ${entry.fileName} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${entry.fileName}: ${entryError.message}`);
@@ -166,12 +182,15 @@ async function encryptTarGZ(file) {
     }
 
     log("Encryption complete!");
-    
-    await download();
+
+    const finalBlob = new Blob(encryptedTarBlobs);
+
+    await download(finalBlob);
   } catch (error) {
     log(`Error during encryption: ${error.message}`);
   }
 }
+
 
 
 async function encrypt(data, password) {
