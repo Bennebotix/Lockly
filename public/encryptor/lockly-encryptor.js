@@ -133,7 +133,7 @@ async function encryptTarGZ(file, pwd) {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = file.name.replace('.tar.gz', '.tar.gz'); // Change filename
+      a.download = file.name.replace('.tar.gz', '.tar.gz');
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -172,7 +172,7 @@ async function encryptTarGZ(file, pwd) {
           const encryptedFile = await encrypt(entryData, pwd);
           const savedBlob = await saveToTar(encryptedFile.encryptedData, entry.fileName);
           
-          encryptedTarBlobs.push(savedBlob); // Collect all encrypted blob parts
+          encryptedTarBlobs.push(savedBlob);
           log(`  - ${entry.fileName} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${entry.fileName}: ${entryError.message}`);
@@ -196,7 +196,7 @@ async function encryptTarGZ(file, pwd) {
 
 async function encrypt(data, password) {
   const enc = new TextEncoder();
-  const salt = window.crypto.getRandomValues(new Uint8Array(16)); // Generate random salt
+  const salt = window.crypto.getRandomValues(new Uint8Array(16));
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
     enc.encode(password),
@@ -218,7 +218,7 @@ async function encrypt(data, password) {
     ["encrypt"]
   );
 
-  const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Initialization vector
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
   const encryptedData = await crypto.subtle.encrypt(
     {
       name: "AES-GCM",
@@ -229,5 +229,5 @@ async function encrypt(data, password) {
     data
   );
 
-  return { iv, salt, encryptedData }; // Return IV, salt, and encrypted data
+  return { iv, salt, encryptedData };
 }
