@@ -2,7 +2,7 @@ const consoleDiv = document.getElementById("console");
 let pwd;
 let exportZip;
 
-document.querySelector("#encriptBtn").addEventListener("click", async () => {
+document.querySelector("#encryptBtn").addEventListener("click", async () => {
   const fileInput = document.querySelector("#fileInput");
   pwd = document.querySelector("#password").value;
 
