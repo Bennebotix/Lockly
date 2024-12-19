@@ -56,7 +56,8 @@ async function decompressZip(file) {
       if (!relativePath.endsWith('/')) {
         log(`- Decompressing: ${relativePath}...`);
         try {
-          const encryptedFile = await encrypt(entry.async("arraybuffer"), await hash(new Blob([pwd], { type: 'text/plain' })));
+          const hashedKey = await hash(pwd);
+          const encryptedFile = await encrypt(await entry.async("arraybuffer"), hashedKey);
           await save(encryptedFile, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
@@ -81,17 +82,23 @@ async function save(file, path) {
   await exportZip.file(path, file, { binary: true });
 }
 
-async function hash(file) {
-  return await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+async function hash(password) {
+  const enc = new TextEncoder();
+  const keyMaterial = enc.encode(password);
+  return await crypto.subtle.digest("SHA-256", keyMaterial);
 }
+
 
 async function encrypt(data, key) {
   const nativeKey = await crypto.subtle.importKey(
     "raw",
     key,
-    { name: "RSA-OAEP" },
+    {
+      name: "RSA-OAEP",
+      hash: { name: "SHA-256" }
+    },
     false,
-    ["encrypt"]
+    ["encrypt", "decrypt"]
   );
   return await crypto.subtle.encrypt({ name: "RSA-OAEP" }, nativeKey, data);
 }
