@@ -17,7 +17,7 @@ document.querySelector("#encriptBtn").addEventListener("click", async () => {
   } else if (file.name.endsWith(".tar.gz")) {
     log("TAR.GZ decompression is not implemented in this demo.");
   } else {
-    log("Unsupported file type.");
+    log("Unsupported file type. ");
   }
 });
 
@@ -34,9 +34,23 @@ async function decompressZip(file) {
     const zipContent = await zip.loadAsync(fileData);
     log("ZIP file decompressed. Contents:");
 
-    zip.forEach((relativePath, zipEntry) => {
-      log(`- ${relativePath}`);
+    // Get the total number of entries for a progress indicator
+    const totalEntries = Object.keys(zipContent.files).length;
+    let processedEntries = 0;
+
+    zip.forEach(async (relativePath, zipEntry) => {
+      log(`- Decompressing: ${relativePath}...`);
+      try {
+        const content = await zipEntry.async("text"); // Modify as needed for binary data
+        log(`  - ${relativePath} decompressed successfully.`);
+      } catch (entryError) {
+        log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
+      }
+      processedEntries++;
+      log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
     });
+
+    log("Decompression complete!");
   } catch (error) {
     log(`Error during decompression: ${error.message}`);
   }
@@ -64,9 +78,9 @@ async function hashFileInChunks(file) {
   }
 
   // Convert the final hash to a binary string
-  let binaryString = "";
+  let binary = [];
   for (let byte of sha256) {
-    binaryString += byte.toString(2).padStart(8, "0"); // Convert each byte to a binary string
+    binary.push(byte.toString(2).padStart(8, "0"));
   }
 
   return binaryString;
