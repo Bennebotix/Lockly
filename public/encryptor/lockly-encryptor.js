@@ -95,7 +95,7 @@ async function encrypt(data, key) {
     key,
     {
       name: "RSA-OAEP",
-      hash: { name: "SHA-256" }
+      hash: "SHA-256"
     },
     false,
     ["encrypt", "decrypt"]
