@@ -1,8 +1,9 @@
 const consoleDiv = document.getElementById("console");
+let pwd;
 
 document.querySelector("#encriptBtn").addEventListener("click", async () => {
   const fileInput = document.querySelector("#fileInput");
-  const password = document.querySelector("#password").value;
+  pwd = document.querySelector("#password").value;
 
   if (fileInput.files.length === 0) {
     log("Please select a file to decompress.");
@@ -21,8 +22,13 @@ document.querySelector("#encriptBtn").addEventListener("click", async () => {
   }
 });
 
-function log(message) {
-  consoleDiv.innerHTML += message + "<br>";
+function log(message, overwriteLast) {
+  if (overwriteLast) {
+    consoleDiv.removeChild(consoleDiv.lastChild);
+  }
+  let node = document.createElement("span");
+  node.innerHTML = message + "<br>";
+  consoleDiv.appendChild(node);
   consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
@@ -31,8 +37,9 @@ async function decompressZip(file) {
   try {
     const fileData = await file.arrayBuffer();
     let dotCount = 0;
-    const dotInterval = setInterval(() => 42      const dots = '.'.repeat(dotCount % 4); // Max 3 dots
-     log(`Decompressing ZIP file${dots}`, true); // Overwrite the loading message
+    const dotInterval = setInterval(() => {
+      const dots = ".".repeat(dotCount % 4); // Max 3 dots
+      log(`Decompressing ZIP file${dots}`, true); // Overwrite the loading message
       dotCount++;
     }, 500);
     const zipContent = await zip.loadAsync(fileData);
@@ -42,10 +49,10 @@ async function decompressZip(file) {
     const totalEntries = Object.keys(zipContent.files).length;
     let processedEntries = 0;
 
-    zip.forEach(async (relativePath, zipEntry) => {
+    zip.forEach(async (relativePath, entry) => {
       log(`- Decompressing: ${relativePath}...`);
       try {
-        const content = await zipEntry.async("text");
+        encrypt(entry, hash(pwd));
         log(`  - ${relativePath} decompressed successfully.`);
       } catch (entryError) {
         log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
@@ -60,32 +67,17 @@ async function decompressZip(file) {
   }
 }
 
-async function hashFileInChunks(file) {
-  const chunkSize = 1024 * 1024; // 1MB
-  const totalChunks = Math.ceil(file.size / chunkSize);
-  const sha256 = new Uint8Array(32); // SHA-256 produces a 32-byte hash
+async function hash(file) {
+  return await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+}
 
-  for (let currentChunk = 0; currentChunk < totalChunks; currentChunk++) {
-    const start = currentChunk * chunkSize;
-    const end = Math.min(start + chunkSize, file.size);
-    const blob = file.slice(start, end);
-
-    const arrayBuffer = await blob.arrayBuffer();
-    const chunkHash = new Uint8Array(
-      await crypto.subtle.digest("SHA-256", arrayBuffer),
-    );
-
-    // XOR the current chunk hash with the accumulated hash
-    for (let i = 0; i < sha256.length; i++) {
-      sha256[i] ^= chunkHash[i];
-    }
-  }
-
-  // Convert the final hash to a binary string
-  let binary = [];
-  for (let byte of sha256) {
-    binary.push(byte.toString(2).padStart(8, "0"));
-  }
-
-  return binaryString;
+async function encrypt(file, key) {
+  const nativeKey = await crypto.importKey(
+    "raw",
+    key,
+    { name: "RSA-OAEP" },
+    false,
+    ["encrypt", "decrypt"],
+  );
+  return await crypto.encrypt({ name: "RSA-OAEP" }, nativeKey, file);
 }
