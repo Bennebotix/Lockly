@@ -54,3 +54,43 @@ self.addEventListener('message', (event) => {
     key = event.data.data;
   }
 });
+
+async function decrypt(data, password) {
+  const enc = new TextEncoder();
+  const salt = data.salt;
+  const iv = data.iv;
+  const encryptedContent = data.data;
+
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits", "deriveKey"]
+  );
+
+  const aesKey = await crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
+      hash: "SHA-256",
+    },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["decrypt"]
+  );
+
+  const decryptedData = await crypto.subtle.decrypt(
+    {
+      name: "AES-GCM",
+      iv: iv,
+      tagLength: 128,
+    },
+    aesKey,
+    encryptedContent
+  );
+
+  return decryptedData;
+}
