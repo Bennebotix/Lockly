@@ -1,4 +1,4 @@
-var data = 'test';
+var data;
 
 self.addEventListener("fetch", (event) => {
   function reject() {
@@ -40,6 +40,6 @@ function send(msg, event) {
 
 self.addEventListener('message', (event) => {
   if (event.data.type === 'LOCAL_STORAGE_KEY') {
-    //data = event.data.data;
+    data = event.data.data;
   }
 });
