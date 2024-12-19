@@ -11,6 +11,14 @@
       eruda.init();
       
       if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          if (registrations.length) {
+            for (let registration of registrations) {
+              registration.unregister();
+            }
+          }
+        });
+        
         navigator.serviceWorker.register('/locklySW.js').then(registration => {
           console.log('Service Worker registered with scope:', registration.scope);
           
