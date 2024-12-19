@@ -37,10 +37,11 @@ async function decompressZip(file) {
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
+    log("Setting thigs up", true);
     let dotCount = 1;
     const dotInterval = setInterval(() => {
-      const dots = ".".repeat(dotCount % 4); // Max 3 dots
-      log(`Decompressing ZIP file${dots}`, true); // Overwrite the loading message
+      const dots = ".".repeat(dotCount % 4);
+      log(`Setting thigs up${dots}`, true);
       dotCount++;
     }, 500);
     const fileData = await file.arrayBuffer();
