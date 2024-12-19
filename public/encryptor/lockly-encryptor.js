@@ -11,15 +11,20 @@ document.querySelector("#encryptBtn").addEventListener("click", async () => {
     return;
   }
 
-  const file = fileInput.files[0];
-  log(`Selected file: ${file.name}`);
-
-  if (file.name.endsWith(".zip")) {
-    await encryptZip(file);
-  } else if (file.name.endsWith(".tar.gz")) {
-    log("TAR.GZ decompression is not implemented yet");
+  const files = fileInput.files;
+  if (files.length > 1) {
+    //encryptFolder(files);
   } else {
-    log("Unsupported file type. ");
+    const file = files[0];
+    log(`Selected file: ${file.name}`);
+  
+    if (file.name.endsWith(".zip")) {
+      await encryptZip(file);
+    } else if (file.name.endsWith(".tar.gz")) {
+      await encryptTarGZ(file);
+    } else {
+      log("Unsupported file type. ");
+    }
   }
 });
 
@@ -34,10 +39,14 @@ function log(message, overwriteLast = false) {
 }
 
 async function encryptZip(file) {
+  async function saveZIP(file, path) {
+    await exportZip.file(path, file, { binary: true });
+  }
+  
   const download = async () => {
     try {
-      const content = await exportZip.generateAsync({ type: "blob" });  // Generate as Blob
-      const url = URL.createObjectURL(content); // Create a URL for the blob
+      const content = await exportZip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
   
       const a = document.createElement("a");
       a.href = url;
@@ -53,7 +62,8 @@ async function encryptZip(file) {
   };
   
   const zip = new JSZip();
-  exportZip = new JSZip();
+  const exportZip = new JSZip();
+  
   try {
     log("Decompressing...");
     let dotCount = 0;
@@ -76,7 +86,7 @@ async function encryptZip(file) {
         try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
-          await save(encryptedFile.encryptedData, relativePath);
+          await saveZIP(encryptedFile.encryptedData, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${relativePath}: ${entryError.message}`);
@@ -92,11 +102,6 @@ async function encryptZip(file) {
   } catch (error) {
     log(`Error during encryption: ${error.message}`);
   }
-}
-
-
-async function save(file, path) {
-  await exportZip.file(path, file, { binary: true });
 }
 
 async function encrypt(data, password) {
