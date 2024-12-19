@@ -16,6 +16,7 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+        
         input[type="file"], input[type="password"] {
             margin: 10px 0;
             background-color: #333;
@@ -25,6 +26,7 @@
             padding: 10px 15px;
             cursor: pointer;
         }
+        
         #console {
             background: #333;
             color: #eee;
@@ -38,6 +40,13 @@
             top: 0px;
             left: 0px;
         }
+
+        #inputs {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+        }
+        
         button {
             background-color: #007BFF;
             color: white;
@@ -51,10 +60,11 @@
     </style>
 </head>
 <body>
-
+<div id="inputs">
 <h1>File Decompressor</h1>
 <input type="password" id="password" placeholder="Enter Password" /><br />
 <input type="file" id="fileInput" accept=".zip,.tar.gz" /><br />
+    </div>
 <button id="encriptBtn">Encript</button><br />
 
 <div id="console"></div>
