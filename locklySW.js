@@ -1,4 +1,4 @@
-let data;
+let data = 'test';
 
 self.addEventListener("fetch", (event) => {
   function reject() {
