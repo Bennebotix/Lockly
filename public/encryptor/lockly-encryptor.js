@@ -42,6 +42,7 @@ async function encryptZip(file) {
   const exportZip = new JSZip();
 
   async function saveToZIP(file, path) {
+    console.log(path)
     await exportZip.file(path, file, { binary: true });
   }
   
