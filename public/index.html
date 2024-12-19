@@ -17,6 +17,11 @@
           if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', data: localStorage.getItem('LOCKLY_ENCRIPTOR_KEY')
           }
+
+          navigator.serviceWorker.addEventListener("message", (event) => {
+            console.log(event.data.msg);
+          });
+
         }).catch((error) => {
           console.log('Service Worker registration failed:', error);
         });
