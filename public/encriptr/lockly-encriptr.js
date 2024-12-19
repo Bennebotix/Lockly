@@ -35,6 +35,7 @@ function log(message, overwriteLast) {
 async function decompressZip(file) {
   const zip = new JSZip();
   try {
+    let dotCount = 1;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4); // Max 3 dots
       log(`Decompressing ZIP file${dots}`, true); // Overwrite the loading message
