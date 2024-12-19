@@ -10,8 +10,8 @@
     <script>
       eruda.init();
       
-      /*if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+      if ('serviceWorker' in navigator) {
+        /*navigator.serviceWorker.getRegistrations().then(function (registrations) {
           if (registrations.length) {
             for (let registration of registrations) {
               registration.unregister();
@@ -28,12 +28,12 @@
 
           navigator.serviceWorker.controller.addEventListener("message", (event) => {
             alert(event.data.msg);
-          });
+          });*/
 
         }).catch((error) => {
           console.log('Service Worker registration failed:', error);
         });
-      }*/
+      }
     </script>
   </body>
 </html>
