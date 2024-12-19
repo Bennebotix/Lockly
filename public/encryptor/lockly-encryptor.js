@@ -77,7 +77,7 @@ async function decompressZip(file) {
 
 async function save(fie, path) {
   console.log(path);
-  //exportZip.file(path, file, { binary: true });
+  await exportZip.file(path, file, { binary: true });
 }
 
 async function hash(file) {
