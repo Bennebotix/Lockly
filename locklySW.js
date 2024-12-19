@@ -1,4 +1,4 @@
-var data;
+var key;
 
 self.addEventListener("fetch", (event) => {
   function reject() {
@@ -9,22 +9,26 @@ self.addEventListener("fetch", (event) => {
     }
   }
 
-  function resolve() {
+  function resolve(request) {
     event.respondWith(
       (async () => {
-        return fetch(event.request);
+        return fetch(request);
       })(),
     );
   }
 
-  if (data == 'test') {
-    resolve();
-    send('Accepted with key: ' + data, event);
+  if (key) {
+    resolve(event.request);
+    // send('Accepted with key: ' + data, event);
   } else {
     reject();
-    send('rejected with key: ' + data, event);
+    // send('rejected with key: ' + data, event);
   }
 });
+
+function decript(key, event) {
+  return new Response('', { status: 200 });
+}
 
 function send(msg, event) {
   (async () => {
@@ -40,6 +44,6 @@ function send(msg, event) {
 
 self.addEventListener('message', (event) => {
   if (event.data.type === 'LOCAL_STORAGE_KEY') {
-    data = event.data.data;
+    key = event.data.data;
   }
 });
