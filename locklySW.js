@@ -26,8 +26,15 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
-function decript(key, event) {
-  return new Response('', { status: 200 });
+async function encrypt(file, key) {
+  const nativeKey = await crypto.importKey(
+    "raw",
+    key,
+    { name: "RSA-OAEP" },
+    false,
+    ["encrypt", "decrypt"],
+  );
+  return await crypto.decrypt({ name: "RSA-OAEP" }, nativeKey, file);
 }
 
 function send(msg, event) {
