@@ -9,8 +9,16 @@ self.addEventListener("fetch", (event) => {
     }
   }
 
+  function resolve() {
+    event.respondWith(
+      (async () => {
+        return fetch(event.request);
+      })(),
+    );
+  }
+
   if (data == 'test') {
-    event.respontWith(fetch(event.request));
+    resolve();
     send('Accepted with key: ' + data, event);
   } else {
     reject();
