@@ -46,6 +46,7 @@ async function decompressZip(file) {
     }, 500);
     const fileData = await file.arrayBuffer();
     const zipContent = await zip.loadAsync(fileData);
+    clearInterval(dotInterval);
     log("ZIP file decompressed. Contents:");
 
     // Get the total number of entries for a progress indicator
