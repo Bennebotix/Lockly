@@ -14,8 +14,9 @@
         });
       
         navigator.serviceWorker.addEventListener("message", (event) => {
-          alert(event.data.msg + ' : ' + event.data.url);
+          console.log(event.data);
         });
+
       }
     </script>
   </body>
