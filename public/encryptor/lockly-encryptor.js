@@ -1,8 +1,8 @@
+const fileInput = document.querySelector("#fileInput");
 const consoleDiv = document.getElementById("console");
 let pwd;
 
-document.querySelector("#encryptBtn").addEventListener("click", async () => {
-  const fileInput = document.querySelector("#fileInput");
+fileInput.addEventListener("change", async () => {
   pwd = document.querySelector("#password").value;
 
   if (fileInput.files.length === 0) {
