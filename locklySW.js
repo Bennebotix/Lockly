@@ -10,7 +10,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (data == 'test') {
-    event.respontWith(event.request);
+    event.respontWith(fetch(event.request));
     send('Accepted with key: ' + data, event);
   } else {
     reject();
