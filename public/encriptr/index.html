@@ -41,9 +41,9 @@
 <body>
 
 <h1>File Decompressor</h1>
-<input type="password" id="password" placeholder="Enter Password" />
-<input type="file" id="fileInput" accept=".zip,.tar.gz" />
-<button id="decompressBtn">Decompress</button>
+<input type="password" id="password" placeholder="Enter Password" /><br />
+<input type="file" id="fileInput" accept=".zip,.tar.gz" /><br />
+<button id="encriptBtn">Encript</button><br />
 
 <div id="console"></div>
 
@@ -51,9 +51,9 @@
 <script>
     const consoleDiv = document.getElementById('console');
     
-    document.getElementById('decompressBtn').addEventListener('click', async () => {
-        const fileInput = document.getElementById('fileInput');
-        const password = document.getElementById('password').value;
+    document.querySelector('#encriptBtn').addEventListener('click', async () => {
+        const fileInput = document.querySelector('#fileInput');
+        const password = document.querySelector('#password').value;
         
         if (fileInput.files.length === 0) {
             log("Please select a file to decompress.");
