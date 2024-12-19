@@ -37,8 +37,8 @@ async function decompressZip(file) {
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
-    log("Setting thigs up");
-    let dotCount = 1;
+    log("Setting thigs up...");
+    let dotCount = 0;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4);
       log(`Setting thigs up${dots}`, true);
@@ -56,7 +56,7 @@ async function decompressZip(file) {
     await zip.forEach(async (relativePath, entry) => {
       log(`- Decompressing: ${relativePath}...`);
       try {
-        await save(encrypt(entry, hash(pwd)), relativePath);
+        await save(encrypt(entry, hash(new File(pwd, 'key.txt'))), relativePath);
         log(`  - ${relativePath} encrypted successfully.`);
       } catch (entryError) {
         log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
@@ -85,7 +85,7 @@ async function hash(file) {
 }
 
 async function encrypt(file, key) {
-  const nativeKey = await crypto.importKey(
+  const nativeKey = await crypto.subtle.importKey(
     "raw",
     key,
     { name: "RSA-OAEP" },
