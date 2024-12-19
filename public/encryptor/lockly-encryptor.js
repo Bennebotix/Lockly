@@ -56,12 +56,12 @@ async function decompressZip(file) {
       if (!relativePath.endsWith('/')) {
         log(`- Decompressing: ${relativePath}...`);
         try {
-          const hashedKey = await hash(pwd);
-          const encryptedFile = await encrypt(entry, hashedKey);
-          await save(encryptedFile, relativePath);
+          const entryData = await entry.async("uint8array");
+          const encryptedFile = await encrypt(entryData, pwd);
+          await save(encryptedFile.encryptedData, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
-          log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
+          log(`  - Error processing ${relativePath}: ${entryError.message}`);
         }
         processedEntries++;
         log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
@@ -78,27 +78,45 @@ async function decompressZip(file) {
   }
 }
 
+
 async function save(file, path) {
   await exportZip.file(path, file, { binary: true });
 }
 
-async function hash(password) {
+async function encrypt(data, password) {
   const enc = new TextEncoder();
-  const keyMaterial = enc.encode(password);
-  return await crypto.subtle.digest("SHA-256", keyMaterial);
-}
-
-
-async function encrypt(data, key) {
-  const nativeKey = await crypto.subtle.importKey(
+  const salt = window.crypto.getRandomValues(new Uint8Array(16)); // Generate random salt
+  const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    key,
+    enc.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits", "deriveKey"]
+  );
+  
+  const aesKey = await crypto.subtle.deriveKey(
     {
-      name: "RSA-OAEP",
+      name: "PBKDF2",
+      salt: salt,
+      iterations: 100000,
       hash: "SHA-256"
     },
-    false,
-    ["encrypt", "decrypt"]
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    true,
+    ["encrypt"]
   );
-  return await crypto.subtle.encrypt({ name: "RSA-OAEP" }, nativeKey, data);
+
+  const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Initialization vector
+  const encryptedData = await crypto.subtle.encrypt(
+    {
+      name: "AES-GCM",
+      iv: iv,
+      tagLength: 128,
+    },
+    aesKey,
+    data
+  );
+
+  return { iv, salt, encryptedData }; // Return IV, salt, and encrypted data
 }
