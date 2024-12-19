@@ -54,16 +54,17 @@ async function decompressZip(file) {
     let processedEntries = 0;
 
     await zip.forEach(async (relativePath, entry) => {
-      if (relativePath[relativePath.split('').length - 1] !== '/')
-      log(`- Decompressing: ${relativePath}...`);
-      try {
-        await save(encrypt(entry, hash(new File(pwd, 'key.txt'))), relativePath);
-        log(`  - ${relativePath} encrypted successfully.`);
-      } catch (entryError) {
-        log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
+      if (relativePath[relativePath.split('').length - 1] !== '/') {
+        log(`- Decompressing: ${relativePath}...`);
+        try {
+          await save(encrypt(entry, hash(new File(pwd, 'key.txt'))), relativePath);
+          log(`  - ${relativePath} encrypted successfully.`);
+        } catch (entryError) {
+          log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
+        }
+        processedEntries++;
+        log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
       }
-      processedEntries++;
-      log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
     });
 
     log("Decompression complete!");
