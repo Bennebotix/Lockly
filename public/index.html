@@ -18,7 +18,7 @@
             navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', data: localStorage.getItem('LOCKLY_ENCRIPTOR_KEY');
           }
 
-          navigator.serviceWorker.addEventListener("message", (event) => {
+          navigator.serviceWorker.controller.addEventListener("message", (event) => {
             alert(event.data.msg);
           });
 
