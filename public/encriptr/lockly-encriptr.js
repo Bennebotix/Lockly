@@ -41,7 +41,7 @@ async function decompressZip(file) {
     zip.forEach(async (relativePath, zipEntry) => {
       log(`- Decompressing: ${relativePath}...`);
       try {
-        const content = await zipEntry.async("text"); // Modify as needed for binary data
+        const content = await zipEntry.async("text");
         log(`  - ${relativePath} decompressed successfully.`);
       } catch (entryError) {
         log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
