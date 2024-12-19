@@ -57,7 +57,7 @@ async function decompressZip(file) {
         log(`- Decompressing: ${relativePath}...`);
         try {
           const hashedKey = await hash(pwd);
-          const encryptedFile = await encrypt(await entry.async("arraybuffer"), hashedKey);
+          const encryptedFile = await encrypt(await entry.async("binary"), hashedKey);
           await save(encryptedFile, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
