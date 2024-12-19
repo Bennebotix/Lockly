@@ -12,11 +12,6 @@
         navigator.serviceWorker.register('/locklySW.js').then(registration => {
           console.log('Service Worker registered with scope:', registration.scope);
         });
-      
-        navigator.serviceWorker.addEventListener("message", (event) => {
-          alert('msg');
-        });
-
       }
     </script>
   </body>
