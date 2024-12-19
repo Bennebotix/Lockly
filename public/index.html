@@ -27,7 +27,7 @@
           }
 
           navigator.serviceWorker.addEventListener("message", (event) => {
-            alert(event.data.msg);
+            console.log(event.data.msg);
           });
 
         }).catch((error) => {
