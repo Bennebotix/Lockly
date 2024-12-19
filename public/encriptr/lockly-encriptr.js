@@ -35,13 +35,13 @@ function log(message, overwriteLast) {
 async function decompressZip(file) {
   const zip = new JSZip();
   try {
-    const fileData = await file.arrayBuffer();
-    let dotCount = 0;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4); // Max 3 dots
       log(`Decompressing ZIP file${dots}`, true); // Overwrite the loading message
       dotCount++;
     }, 500);
+    const fileData = await file.arrayBuffer();
+    let dotCount = 0;
     const zipContent = await zip.loadAsync(fileData);
     log("ZIP file decompressed. Contents:");
 
