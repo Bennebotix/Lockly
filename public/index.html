@@ -23,7 +23,7 @@
           console.log('Service Worker registered with scope:', registration.scope);
           
           if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', data: localStorage.getItem('LOCKLY_ENCRIPTOR_KEY');
+            navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', data: localStorage.getItem('LOCKLY_ENCRIPTOR_KEY') });
           }
 
           navigator.serviceWorker.controller.addEventListener("message", (event) => {
