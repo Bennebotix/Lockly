@@ -1,5 +1,6 @@
 const consoleDiv = document.getElementById("console");
 let pwd;
+let exportZip;
 
 document.querySelector("#encriptBtn").addEventListener("click", async () => {
   const fileInput = document.querySelector("#fileInput");
@@ -34,6 +35,7 @@ function log(message, overwriteLast) {
 
 async function decompressZip(file) {
   const zip = new JSZip();
+  exportZip = new JSZip();
   try {
     let dotCount = 1;
     const dotInterval = setInterval(() => {
@@ -50,11 +52,11 @@ async function decompressZip(file) {
     const totalEntries = Object.keys(zipContent.files).length;
     let processedEntries = 0;
 
-    zip.forEach(async (relativePath, entry) => {
+    await zip.forEach(async (relativePath, entry) => {
       log(`- Decompressing: ${relativePath}...`);
       try {
-        encrypt(entry, hash(pwd));
-        log(`  - ${relativePath} decompressed successfully.`);
+        await save(encrypt(entry, hash(pwd)), relativePath);
+        log(`  - ${relativePath} encrypted successfully.`);
       } catch (entryError) {
         log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
       }
@@ -63,9 +65,18 @@ async function decompressZip(file) {
     });
 
     log("Decompression complete!");
+    
+    exportZip.generateAsync({type:"base64"}).then(function (content) {
+      location.href="data:application/zip;base64," + content;
+    });
   } catch (error) {
     log(`Error during decompression: ${error.message}`);
   }
+}
+
+async function save(fie, path) {
+  console.log(path)
+  //exportZip.file(path, file, { binary: true });
 }
 
 async function hash(file) {
