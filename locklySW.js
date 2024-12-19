@@ -11,10 +11,24 @@ self.addEventListener("fetch", (event) => {
 
   if (data == 'test') {
     event.respontWith(event.request);
+    send('Accepted with key: ' + data, event);
   } else {
     reject();
+    send('rejected with key: ' + data, event);
   }
 });
+
+function send(msg, event) {
+  (async () => {
+    if (!event.clientId) return;
+    const client = await self.clients.get(event.clientId);
+    if (!client) return;
+
+    client.postMessage({
+      msg: msg
+    });
+  })()
+}
 
 self.addEventListener('message', (event) => {
   if (event.data.type === 'LOCAL_STORAGE_KEY') {
