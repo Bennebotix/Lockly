@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>File Decompressor</title>
+    <title>Lockly Encriptr</title>
     <style>
         * {
             margin: 0px;
@@ -71,51 +71,7 @@
 <div id="console"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script>
-    const consoleDiv = document.getElementById('console');
-    
-    document.querySelector('#encriptBtn').addEventListener('click', async () => {
-        const fileInput = document.querySelector('#fileInput');
-        const password = document.querySelector('#password').value;
-        
-        if (fileInput.files.length === 0) {
-            log("Please select a file to decompress.");
-            return;
-        }
-
-        const file = fileInput.files[0];
-        log(`Selected file: ${file.name}`);
-        
-        if (file.name.endsWith('.zip')) {
-            await decompressZip(file);
-        } else if (file.name.endsWith('.tar.gz')) {
-            log("TAR.GZ decompression is not implemented in this demo.");
-        } else {
-            log("Unsupported file type.");
-        }
-    });
-
-    function log(message) {
-        consoleDiv.innerHTML += message + '<br>';
-        consoleDiv.scrollTop = consoleDiv.scrollHeight;
-    }
-
-    async function decompressZip(file) {
-        const zip = new JSZip();
-        try {
-            const fileData = await file.arrayBuffer();
-            log("Decompressing ZIP file...");
-            const zipContent = await zip.loadAsync(fileData);
-            log("ZIP file decompressed. Contents:");
-
-            zip.forEach((relativePath, zipEntry) => {
-                log(`- ${relativePath}`);
-            });
-        } catch (error) {
-            log(`Error during decompression: ${error.message}`);
-        }
-    }
-</script>
+<script src="./lockly-encriptr.js"></script>
 
 </body>
 </html>
