@@ -54,6 +54,7 @@ async function decompressZip(file) {
     let processedEntries = 0;
 
     await zip.forEach(async (relativePath, entry) => {
+      if (relativePath[relativePath.split('').length - 1] !== '/')
       log(`- Decompressing: ${relativePath}...`);
       try {
         await save(encrypt(entry, hash(new File(pwd, 'key.txt'))), relativePath);
