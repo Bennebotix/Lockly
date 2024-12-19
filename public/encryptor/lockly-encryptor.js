@@ -37,11 +37,11 @@ async function decompressZip(file) {
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
-    log("Setting thigs up...");
+    log("Setting things up...");
     let dotCount = 0;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4);
-      log(`Setting thigs up${dots}`, true);
+      log(`Setting things up${dots}`, true);
       dotCount++;
     }, 500);
     const fileData = await file.arrayBuffer();
@@ -49,15 +49,15 @@ async function decompressZip(file) {
     clearInterval(dotInterval);
     log("ZIP file decompressed. Contents:");
 
-    // Get the total number of entries for a progress indicator
     const totalEntries = Object.keys(zipContent.files).length;
     let processedEntries = 0;
 
-    await zip.forEach(async (relativePath, entry) => {
-      if (relativePath[relativePath.split('').length - 1] !== '/') {
+    for (const [relativePath, entry] of Object.entries(zipContent.files)) {
+      if (!relativePath.endsWith('/')) {
         log(`- Decompressing: ${relativePath}...`);
         try {
-          await save(encrypt(entry, hash(new File(pwd, 'key.txt'))), relativePath);
+          const encryptedFile = await encrypt(entry.async("arraybuffer"), await hash(new Blob([pwd], { type: 'text/plain' })));
+          await save(encryptedFile, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error decompressing ${relativePath}: ${entryError.message}`);
@@ -65,11 +65,11 @@ async function decompressZip(file) {
         processedEntries++;
         log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
       }
-    });
+    }
 
     log("Decompression complete!");
 
-    exportZip.generateAsync({ type: "base64" }).then(function (content) {
+    exportZip.generateAsync({ type: "base64" }).then(content => {
       location.href = "data:application/zip;base64," + content;
     });
   } catch (error) {
@@ -86,13 +86,13 @@ async function hash(file) {
   return await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
 }
 
-async function encrypt(file, key) {
+async function encrypt(data, key) {
   const nativeKey = await crypto.subtle.importKey(
     "raw",
     key,
     { name: "RSA-OAEP" },
     false,
-    ["encrypt", "decrypt"],
+    ["encrypt"]
   );
-  return await crypto.encrypt({ name: "RSA-OAEP" }, nativeKey, file);
+  return await crypto.subtle.encrypt({ name: "RSA-OAEP" }, nativeKey, data);
 }
