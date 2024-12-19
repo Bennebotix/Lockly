@@ -8,6 +8,12 @@ self.addEventListener("fetch", (event) => {
       event.respondWith(new Response('', { status: 404 }));
     }
   }
+
+  if (data == 'test') {
+    event.respontWith(event.request);
+  } else {
+    reject();
+  }
 });
 
 self.addEventListener('message', (event) => {
