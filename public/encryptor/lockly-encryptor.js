@@ -15,7 +15,7 @@ document.querySelector("#encryptBtn").addEventListener("click", async () => {
   log(`Selected file: ${file.name}`);
 
   if (file.name.endsWith(".zip")) {
-    await decompressZip(file);
+    await encryptZip(file);
   } else if (file.name.endsWith(".tar.gz")) {
     log("TAR.GZ decompression is not implemented in this demo.");
   } else {
@@ -33,21 +33,21 @@ function log(message, overwriteLast = false) {
   consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
-async function decompressZip(file) {
+async function encryptZip(file) {
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
-    log("Setting things up...");
+    log("Decompressing...");
     let dotCount = 0;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4);
-      log(`Setting things up${dots}`, true);
+      log(`Decompressing${dots}`, true);
       dotCount++;
     }, 500);
     const fileData = await file.arrayBuffer();
     const zipContent = await zip.loadAsync(fileData);
     clearInterval(dotInterval);
-    log("ZIP file decompressed. Contents:");
+    log("ZIP file decompressed.");
 
     const totalEntries = Object.keys(zipContent.files).filter(relativePath => !relativePath.endsWith('/')).length;
     let processedEntries = 0;
@@ -64,17 +64,17 @@ async function decompressZip(file) {
           log(`  - Error processing ${relativePath}: ${entryError.message}`);
         }
         processedEntries++;
-        log(`Progress: ${processedEntries} of ${totalEntries} items processed.`);
+        log(`Progress: ${processedEntries} of ${totalEntries}`);
       }
     }
 
-    log("Decompression complete!");
+    log("Encryption complete!");
 
     exportZip.generateAsync({ type: "base64" }).then(content => {
       location.href = "data:application/zip;base64," + content;
     });
   } catch (error) {
-    log(`Error during decompression: ${error.message}`);
+    log(`Error during encryption: ${error.message}`);
   }
 }
 
