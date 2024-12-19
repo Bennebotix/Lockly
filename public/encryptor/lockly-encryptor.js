@@ -23,7 +23,7 @@ document.querySelector("#encryptBtn").addEventListener("click", async () => {
   }
 });
 
-function log(message, overwriteLast) {
+function log(message, overwriteLast = false) {
   if (overwriteLast) {
     consoleDiv.removeChild(consoleDiv.lastChild);
   }
@@ -37,7 +37,7 @@ async function decompressZip(file) {
   const zip = new JSZip();
   exportZip = new JSZip();
   try {
-    log("Setting thigs up", true);
+    log("Setting thigs up");
     let dotCount = 1;
     const dotInterval = setInterval(() => {
       const dots = ".".repeat(dotCount % 4);
@@ -45,7 +45,6 @@ async function decompressZip(file) {
       dotCount++;
     }, 500);
     const fileData = await file.arrayBuffer();
-    let dotCount = 0;
     const zipContent = await zip.loadAsync(fileData);
     log("ZIP file decompressed. Contents:");
 
@@ -66,9 +65,9 @@ async function decompressZip(file) {
     });
 
     log("Decompression complete!");
-    
-    exportZip.generateAsync({type:"base64"}).then(function (content) {
-      location.href="data:application/zip;base64," + content;
+
+    exportZip.generateAsync({ type: "base64" }).then(function (content) {
+      location.href = "data:application/zip;base64," + content;
     });
   } catch (error) {
     log(`Error during decompression: ${error.message}`);
@@ -76,7 +75,7 @@ async function decompressZip(file) {
 }
 
 async function save(fie, path) {
-  console.log(path)
+  console.log(path);
   //exportZip.file(path, file, { binary: true });
 }
 
