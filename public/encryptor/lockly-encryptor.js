@@ -1,6 +1,5 @@
 const consoleDiv = document.getElementById("console");
 let pwd;
-let exportZip;
 
 document.querySelector("#encryptBtn").addEventListener("click", async () => {
   const fileInput = document.querySelector("#fileInput");
