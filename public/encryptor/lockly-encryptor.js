@@ -41,7 +41,7 @@ async function encryptZip(file) {
   const zip = new JSZip();
   const exportZip = new JSZip();
 
-  async function saveZIP(file, path) {
+  async function saveToZIP(file, path) {
     await exportZip.file(path, file, { binary: true });
   }
   
@@ -71,21 +71,23 @@ async function encryptZip(file) {
       log(`Decompressing${dots}`, true);
       dotCount++;
     }, 500);
+    
     const fileData = await file.arrayBuffer();
     const zipContent = await zip.loadAsync(fileData);
+    
     clearInterval(dotInterval);
-    log("ZIP file decompressed.");
+    log("Decompression done!");
 
     const totalEntries = Object.keys(zipContent.files).filter(relativePath => !relativePath.endsWith('/')).length;
     let processedEntries = 0;
 
     for (const [relativePath, entry] of Object.entries(zipContent.files)) {
       if (!relativePath.endsWith('/')) {
-        log(`- Decompressing: ${relativePath}...`);
+        log(`- Encrypting: ${relativePath}...`);
         try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
-          await saveZIP(encryptedFile.encryptedData, relativePath);
+          await saveToZIP(encryptedFile.encryptedData, relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${relativePath}: ${entryError.message}`);
@@ -106,26 +108,57 @@ async function encryptZip(file) {
 async function encryptTarGZ(file) {
   const { Gunzip } = pako;
   const { Tar } = tarJs;
+
+  async function saveToTar(file, path) {
+    // Fill in here
+  }
+  
+  const download = async () => {
+    try {
+      const content = await exportZip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+  
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "file.tar.gs";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating ZIP file:", error);
+    }
+  };
   
   try {
     log("Decompressing...");
+    let dotCount = 0;
+    const dotInterval = setInterval(() => {
+      const dots = ".".repeat(dotCount % 4);
+      log(`Decompressing${dots}`, true);
+      dotCount++;
+    }, 500);
 
     const fileData = await file.arrayBuffer();
     const compressedData = new Uint8Array(fileData);
     const decompressedData = Gunzip(compressedData);
 
     const tarEntries = Tar.parse(decompressedData);
+    
+    clearInterval(dotInterval);
+    log("Decompression done!");
 
     let totalEntries = tarEntries.length;
     let processedEntries = 0;
 
     for (const entry of tarEntries) {
       if (!entry.isDirectory) {
-        log(`- Decompressing: ${entry.fileName}...`);
+        log(`- Encrypting: ${entry.fileName}...`);
         try {
           const entryData = await entry.arrayBuffer(); // Get the entry data
           const encryptedFile = await encrypt(entryData, pwd);
-          await saveTarFile(encryptedFile.encryptedData, entry.fileName);
+          await saveToTar(encryptedFile.encryptedData, entry.fileName);
           log(`  - ${entry.fileName} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${entry.fileName}: ${entryError.message}`);
@@ -137,7 +170,7 @@ async function encryptTarGZ(file) {
 
     log("Encryption complete!");
 
-    await downloadTarGZ();
+    await download();
   } catch (error) {
     log(`Error during TAR.GZ encryption: ${error.message}`);
   }
