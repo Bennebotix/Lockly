@@ -1,8 +1,6 @@
 const salt = window.crypto.getRandomValues(new Uint8Array(16));
 
-const workerJS = ;
-const indexHTML = ;
-const four04HTML = ;
+
 
 const fileInput = document.querySelector("#fileInput");
 const consoleDiv = document.getElementById("console");
@@ -46,6 +44,9 @@ function log(message, overwriteLast = false) {
 async function encryptZip(file) {
   const zip = new JSZip();
   const exportZip = new JSZip();
+  const workerJS = await fetch("/worker.js").then(r => r.text());
+  const indexHTML = await fetch("/index.html").then(r => r.text());
+  const four04HTML = await fetch("/404.html").then(r => r.text());
 
   async function saveToZIP(file, path) {
     console.log(path)
