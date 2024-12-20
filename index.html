@@ -1,5 +1,52 @@
-<head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">
- <input style="color: #fff; background-color: #000; border: 2px solid #0f0;" id="key" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <style>
+    pre {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    pre > * {
+      color: #fff;
+      border-radius: 5px;
+      font-family: Courier New;
+      text-align: center;
+      word-break: break-all;
+    }
+    
+    input {
+      width: 173px;
+      height: 86px;
+    }
+
+    input:focus {
+      outline: none;
+    }
+
+    button {
+      width: 238px;
+      height: 43px;
+    }
+
+    button:hover {
+      outline: 2px solid rgba(173, 216, 230, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <pre style="word-wrap: break-word; white-space: pre-wrap;">
+    <input placeholder="Enter Key" id="key">
+    <br />
+    <button id="btn">Register</button>
+  </pre>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -10,9 +57,13 @@
           .catch((error) => {
             console.log('Service Worker registration failed:', error);
           });
+        document.querySelector('#btn').addEventListener('click', () => {
+          navigator.serviceWorker.controller.postMessage({ message: document.querySelector('#key').value });
+        });
       });
     } else {
       console.log('Service workers are not supported in this browser.');
     }
   </script>
-</pre></body>
+</body>
+</html>
