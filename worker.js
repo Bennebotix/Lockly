@@ -12,17 +12,21 @@ self.addEventListener("fetch", (event) => {
   function resolve(request) {
     event.respondWith(
       (async () => {
-        return fetch(request);
+        const response = await fetch(request);
+        const encryptedContent = await response.arrayBuffer();
+
+        const decryptedData = await decrypt(encryptedContent);
+        return new Response(decryptedData, {
+          headers: { 'Content-Type': 'application/octet-stream' }
+        });
       })(),
     );
   }
 
   if (key) {
-    resolve(event.request); // AI: use the decrypt function (intercept request and direct to '/data/[path]' and decryptthe file as raw data)
-    // send('Accepted with key: ' + data, event);
+    resolve(event.request); 
   } else {
-    reject();
-    // send('rejected with key: ' + data, event);
+    reject(); 
   }
 });
 
@@ -44,7 +48,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-async function decrypt(data) {
+async function decrypt(encryptedContent) {
   const enc = new TextEncoder();
   const salt = key.salt;
   const iv = key.iv;
@@ -81,5 +85,5 @@ async function decrypt(data) {
     encryptedContent
   );
 
-  return decryptedData;
+  return new TextDecoder().decode(decryptedData);
 }
