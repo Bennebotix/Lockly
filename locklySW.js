@@ -18,24 +18,13 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (key) {
-    resolve(event.request);
+    resolve(event.request); // AI: use the decrypt function (intercept request and direct to '/data/[path]' and decryptthe file as raw data)
     // send('Accepted with key: ' + data, event);
   } else {
     reject();
     // send('rejected with key: ' + data, event);
   }
 });
-
-async function encrypt(file, key) {
-  const nativeKey = await crypto.importKey(
-    "raw",
-    key,
-    { name: "RSA-OAEP" },
-    false,
-    ["encrypt", "decrypt"],
-  );
-  return await crypto.decrypt({ name: "RSA-OAEP" }, nativeKey, file);
-}
 
 function send(msg, event) {
   (async () => {
@@ -51,19 +40,19 @@ function send(msg, event) {
 
 self.addEventListener('message', (event) => {
   if (event.data.type === 'LOCAL_STORAGE_KEY') {
-    key = event.data.data;
+    key = event.data.key;
   }
 });
 
-async function decrypt(data, password) {
+async function decrypt(data) {
   const enc = new TextEncoder();
-  const salt = data.salt;
-  const iv = data.iv;
-  const encryptedContent = data.data;
+  const salt = key.salt;
+  const iv = key.iv;
+  const pwd = key.b64Pwd;
 
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    enc.encode(password),
+    enc.encode(atob(pwd)),
     { name: "PBKDF2" },
     false,
     ["deriveBits", "deriveKey"]
