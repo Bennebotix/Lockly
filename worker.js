@@ -1,4 +1,7 @@
-var key;
+self.addEventListener('message', event => {
+  self.key = JSON.parse(atob(event.data.key));
+});
+
 
 self.addEventListener("fetch", (event) => {
   if (event.request.host)
@@ -56,13 +59,13 @@ self.addEventListener('message', (event) => {
 
 async function decrypt(encryptedContent) {
   const enc = new TextEncoder();
-  const salt = key.salt;
-  const iv = key.iv;
-  const pwd = key.b64Pwd;
+  const salt = self.key.salt;
+  const iv = self.key.iv;
+  const pwd = self.key.pwd;
 
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    enc.encode(atob(pwd)),
+    enc.encode(pwd),
     { name: "PBKDF2" },
     false,
     ["deriveBits", "deriveKey"]
