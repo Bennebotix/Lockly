@@ -1,32 +1,38 @@
 var key;
 
 self.addEventListener("fetch", (event) => {
+  if (event.request.host)
   function reject() {
-    if (event.request.headers.get("Accept")?.includes("text/html")) {
-      event.respondWith(new Response('Page not accessible, please contact administrator.', { status: 404 }));
-    } else {
-      event.respondWith(new Response('', { status: 404 }));
-    }
+    let msg = event.request.headers.get("Accept")?.includes("text/html") ? 'Page not accessible, please contact administrator.' : '';
+    event.respondWith(new Response(msg, { status: 404 }));
   }
 
   function resolve(request) {
-    event.respondWith(
-      (async () => {
-        const response = await fetch(request);
-        const encryptedContent = await response.arrayBuffer();
+    const newUrl = new URL('/data' + request.url.substring(self.location.origin.length), self.location.origin);
+      event.respondWith(
+        (async () => {
+          const response = await fetch(newUrl);
+          const encryptedContent = await response.arrayBuffer();
 
-        const decryptedData = await decrypt(encryptedContent);
-        return new Response(decryptedData, {
-          headers: { 'Content-Type': 'application/octet-stream' }
-        });
-      })(),
-    );
-  }
+          const decryptedData = await decrypt(encryptedContent);
+          return new Response(decryptedData, {
+            headers: { 'Content-Type': 'application/octet-stream' }
+          });
+        })(),
+      );
+    }
 
-  if (key) {
-    resolve(event.request); 
+  const requestUrl = new URL(event.request.url);
+  const isLocal = requestUrl.origin === self.location.origin;
+
+  if (isLocal) {
+    if (key) {
+      resolve(event.request);
+    } else {
+      reject(); 
+    }
   } else {
-    reject(); 
+    event.respondWith(await fetch(event.request))
   }
 });
 
