@@ -51,7 +51,7 @@ async function encryptZip(file) {
 
   async function saveToZIP(file, path) {
     console.log(path)
-    await exportZip.file('/data' + path, file, { binary: true });
+    await exportZip.file(path, file, { binary: true });
   }
   
   const download = async () => {
@@ -96,7 +96,7 @@ async function encryptZip(file) {
         try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
-          await saveToZIP(encryptedFile.encryptedData, relativePath);
+          await saveToZIP(encryptedFile.encryptedData, '/data/' + relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${relativePath}: ${entryError.message}`);
