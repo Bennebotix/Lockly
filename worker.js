@@ -22,7 +22,7 @@ self.addEventListener("fetch", (event) => {
 
         const decryptedData = await decrypt(encryptedContent);
         return new Response(decryptedData, {
-          headers: { "Content-Type": "application/octet-stream" },
+          headers: response.headers,
         });
       })(),
     );
@@ -55,12 +55,6 @@ function send(msg, event) {
     });
   })();
 }
-
-self.addEventListener("message", (event) => {
-  if (event.data.type === "LOCAL_STORAGE_KEY") {
-    key = event.data.key;
-  }
-});
 
 async function decrypt(encryptedContent) {
   const enc = new TextEncoder();
