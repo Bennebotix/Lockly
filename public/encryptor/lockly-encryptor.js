@@ -6,7 +6,7 @@ let buildDir;
 let pwd;
 
 fileInput.addEventListener("change", async () => {
-  buildDir = document.querySelector("#buildDir").value;
+  buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
   if (fileInput.files.length === 0) {
@@ -91,8 +91,8 @@ async function encryptZip(file) {
     let processedEntries = 0;
 
     for (const [relativePathFull, entry] of Object.entries(zipContent.files)) {
-      if (!relativePathFull.endsWith('/') && relativePathFull.startsWith(buildDir)) {
-        let relativePath = relativePathFull.replace();
+      if (!relativePathFull.endsWith("/") && relativePathFull.startsWith(buildDir)) {
+        let relativePath = relativePathFull.replace(buildDir, "");
         log(`- Encrypting: ${relativePath}...`);
         try {
           const entryData = await entry.async("uint8array");
