@@ -3,13 +3,12 @@ self.addEventListener("message", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.host)
-    function reject() {
-      let msg = event.request.headers.get("Accept")?.includes("text/html")
-        ? "Page not accessible, please contact administrator."
-        : "";
-      event.respondWith(new Response(msg, { status: 404 }));
-    }
+  function reject() {
+    let msg = event.request.headers.get("Accept")?.includes("text/html")
+      ? "Page not accessible, please contact administrator."
+      : "";
+    event.respondWith(new Response(msg, { status: 404 }));
+  }
 
   function resolve(request) {
     const newUrl = new URL(
