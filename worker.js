@@ -1,29 +1,33 @@
-self.addEventListener('message', event => {
+self.addEventListener("message", (event) => {
   self.key = JSON.parse(atob(event.data.key));
 });
 
-
 self.addEventListener("fetch", (event) => {
   if (event.request.host)
-  function reject() {
-    let msg = event.request.headers.get("Accept")?.includes("text/html") ? 'Page not accessible, please contact administrator.' : '';
-    event.respondWith(new Response(msg, { status: 404 }));
-  }
+    function reject() {
+      let msg = event.request.headers.get("Accept")?.includes("text/html")
+        ? "Page not accessible, please contact administrator."
+        : "";
+      event.respondWith(new Response(msg, { status: 404 }));
+    }
 
   function resolve(request) {
-    const newUrl = new URL('/data' + request.url.substring(self.location.origin.length), self.location.origin);
-      event.respondWith(
-        (async () => {
-          const response = await fetch(newUrl);
-          const encryptedContent = await response.arrayBuffer();
+    const newUrl = new URL(
+      "/data" + request.url.substring(self.location.origin.length),
+      self.location.origin,
+    );
+    event.respondWith(
+      (async () => {
+        const response = await fetch(newUrl);
+        const encryptedContent = await response.arrayBuffer();
 
-          const decryptedData = await decrypt(encryptedContent);
-          return new Response(decryptedData, {
-            headers: { 'Content-Type': 'application/octet-stream' }
-          });
-        })(),
-      );
-    }
+        const decryptedData = await decrypt(encryptedContent);
+        return new Response(decryptedData, {
+          headers: { "Content-Type": "application/octet-stream" },
+        });
+      })(),
+    );
+  }
 
   const requestUrl = new URL(event.request.url);
   const isLocal = requestUrl.origin === self.location.origin;
@@ -32,10 +36,12 @@ self.addEventListener("fetch", (event) => {
     if (key) {
       resolve(event.request);
     } else {
-      reject(); 
+      reject();
     }
   } else {
-    event.respondWith(await fetch(event.request))
+    (async () => {
+      event.respondWith(await fetch(event.request));
+    })();
   }
 });
 
@@ -46,13 +52,13 @@ function send(msg, event) {
     if (!client) return;
 
     client.postMessage({
-      msg: msg
+      msg: msg,
     });
-  })()
+  })();
 }
 
-self.addEventListener('message', (event) => {
-  if (event.data.type === 'LOCAL_STORAGE_KEY') {
+self.addEventListener("message", (event) => {
+  if (event.data.type === "LOCAL_STORAGE_KEY") {
     key = event.data.key;
   }
 });
@@ -68,7 +74,7 @@ async function decrypt(encryptedContent) {
     enc.encode(pwd),
     { name: "PBKDF2" },
     false,
-    ["deriveBits", "deriveKey"]
+    ["deriveBits", "deriveKey"],
   );
 
   const aesKey = await crypto.subtle.deriveKey(
@@ -81,7 +87,7 @@ async function decrypt(encryptedContent) {
     keyMaterial,
     { name: "AES-GCM", length: 256 },
     false,
-    ["decrypt"]
+    ["decrypt"],
   );
 
   const decryptedData = await crypto.subtle.decrypt(
@@ -91,7 +97,7 @@ async function decrypt(encryptedContent) {
       tagLength: 128,
     },
     aesKey,
-    encryptedContent
+    encryptedContent,
   );
 
   return new TextDecoder().decode(decryptedData);
