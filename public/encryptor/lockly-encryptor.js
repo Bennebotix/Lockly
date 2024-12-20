@@ -1,7 +1,5 @@
 const salt = window.crypto.getRandomValues(new Uint8Array(16));
 
-
-
 const fileInput = document.querySelector("#fileInput");
 const consoleDiv = document.querySelector("#console");
 let buildDir;
@@ -92,10 +90,9 @@ async function encryptZip(file) {
     const totalEntries = Object.keys(zipContent.files).filter(relativePath => !relativePath.endsWith('/')).length;
     let processedEntries = 0;
 
-    for (const [relativePath, entry] of Object.entries(zipContent.files)) {
-      alert(relativePath)
-      
-      if (!relativePath.endsWith('/') && relativePath.endsWith(buildDir)) {
+    for (const [relativePathFull, entry] of Object.entries(zipContent.files)) {
+      if (!relativePathFull.endsWith('/') && relativePathFull.startsWith(buildDir)) {
+        let relativePath = relativePathFull.replace();
         log(`- Encrypting: ${relativePath}...`);
         try {
           const entryData = await entry.async("uint8array");
