@@ -5,7 +5,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/eruda/3.4.1/eruda.min.js" integrity="sha512-3RVqOZtMevFOLeXCp0/Wl7np/l3J3MMysaFDUhNh+hdKx+Wb0lMXuHwA6CZ/+4DfYZM01Om1as8g+mnTaQH9vA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body>
-    secret page
+    
     
     <script>
       eruda.init();
@@ -19,20 +19,21 @@
           }
         });
         
-        navigator.serviceWorker.register('/locklySW.js').then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-          
-          if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', data: localStorage.getItem('LOCKLY_ENCRIPTOR_KEY') });
-          }
-
-          navigator.serviceWorker.addEventListener("message", (event) => {
-            // event.data.msg
+        function registerWorker(scope) {
+          navigator.serviceWorker.register('/locklySW.js', { scope: scope }).then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+            
+            if (navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ type: 'LOCAL_STORAGE_KEY', key: JSON.parse(localStorage.getItem('LOCKLY_ENCRYPTOR_KEY')) });
+            }
+          }).catch((error) => {
+            console.log('Service Worker registration failed:', error);
           });
+        }
 
-        }).catch((error) => {
-          console.log('Service Worker registration failed:', error);
-        });
+        var directories = [];
+
+        directories.forEach()
       }
     </script>
   </body>
