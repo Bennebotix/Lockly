@@ -23,7 +23,8 @@
       }
 
       input[type="file"],
-      input[type="password"] {
+      input[type="password"],
+      input[type="text"] {
         margin: 10px 0;
         background-color: #333;
         color: white;
@@ -70,6 +71,7 @@
   <body>
     <div id="inputs">
       <h1>Lockly Encryptor</h1>
+      <input type="text" id="buildDir" placeholder="Enter Output Directory" /><br />
       <input type="password" id="password" placeholder="Enter Password" /><br />
       <input type="file" id="fileInput" accept=".zip,.tar.gz" /><br />
     </div>
