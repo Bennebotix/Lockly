@@ -43,7 +43,7 @@ async function encryptZip(file) {
 
   async function saveToZIP(file, path) {
     console.log(path)
-    await exportZip.file(path, file, { binary: true });
+    await exportZip.file('/data' + path, file, { binary: true });
   }
   
   const download = async () => {
@@ -99,6 +99,13 @@ async function encryptZip(file) {
     }
 
     log("Encryption complete!");
+    log("Adding Managers...");
+
+    save(new File([atob(workerJS)], "worker.js"), "/worker.js");
+    save(new File([atob(indexHTML)], "index.html"), "/index.html");
+    save(new File([atob(four04HTML)], "404.html"), "/404.html");
+    
+    log("Managers added.")
 
     await download();
   } catch (error) {
