@@ -177,7 +177,7 @@ async function encrypt(data, password) {
   const encryptedData = await crypto.subtle.encrypt(
     {
       name: "AES-GCM",
-      iv: IV(0),
+      iv: ogIV,
       tagLength: 128,
     },
     aesKey,
