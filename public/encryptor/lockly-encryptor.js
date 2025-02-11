@@ -1,5 +1,5 @@
-const salt = window.crypto.getRandomValues(new Uint8Array(16));
-const ogIV = window.crypto.getRandomValues(new Uint8Array(16));
+let salt;
+let ogIV;
 const IV = (v) => Object.values(ogIV).map(a => (a + v) % 255).reduce((a, c, i) => ({ ...a, [i]: c }), {})
 
 const fileInput = document.querySelector("#fileInput");
@@ -8,6 +8,9 @@ let buildDir;
 let pwd;
 
 fileInput.addEventListener("change", async () => {
+  salt = window.crypto.getRandomValues(new Uint8Array(16));
+  ogIV = window.crypto.getRandomValues(new Uint8Array(12));
+  
   buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
