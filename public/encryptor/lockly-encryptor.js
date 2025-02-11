@@ -50,7 +50,7 @@ function log(message, overwriteLast = false) {
 
 const downloadKey = () => {
   try {
-    const content = new Blob([btoa({ iv: ogIV, salt: salt, pwd: pwd })], "text/txt");
+    const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: salt, pwd: pwd }))], "text/txt");
     const url = URL.createObjectURL(content);
   
     const a = document.createElement("a");
@@ -120,14 +120,14 @@ async function encryptZip(file) {
         let relativePath = relativePathFull.replace(buildDir, "");
         relativePath = relativePath.substring(relativePath.indexOf("/") + 1);
         log(`- Encrypting: ${relativePath}...`);
-        //try {
+        try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
           await saveToZIP(encryptedFile, '/data/' + relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
-        //} catch (entryError) {
-          //log(`  - Error processing ${relativePath}: ${entryError.message}`);
-        //}
+        } catch (entryError) {
+          log(`  - Error processing ${relativePath}: ${JSON.stringify(entryError, 1, 2)}`);
+        }
         processedEntries++;
         log(`Progress: ${processedEntries} of ${totalEntries}`);
       }
