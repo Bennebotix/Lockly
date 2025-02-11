@@ -43,6 +43,24 @@ function log(message, overwriteLast = false) {
   consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
+const downloadKey = () => {
+  try {
+    const content = new Blob([btoa({ iv: ogIV, salt: salt, pwd: pwd })]);
+    const url = URL.createObjectURL(content);
+  
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error generating Key file:", error);
+  }
+};
+
 async function encryptZip(file) {
   const zip = new JSZip();
   const exportZip = new JSZip();
