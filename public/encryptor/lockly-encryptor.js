@@ -93,6 +93,7 @@ async function encryptZip(file) {
     for (const [relativePathFull, entry] of Object.entries(zipContent.files)) {
       if (!relativePathFull.endsWith("/") && relativePathFull.startsWith(buildDir)) {
         let relativePath = relativePathFull.replace(buildDir, "");
+        relativePath = relativePath.substring(relativePath.indexOf("/") + 1);
         log(`- Encrypting: ${relativePath}...`);
         try {
           const entryData = await entry.async("uint8array");
