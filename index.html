@@ -63,7 +63,7 @@
             });
           document.querySelector("#btn").addEventListener("click", () => {
             navigator.serviceWorker.controller.postMessage({
-              message: document.querySelector("#key").value,
+              key: btoa(document.querySelector("#key").value),
             });
           });
         });
