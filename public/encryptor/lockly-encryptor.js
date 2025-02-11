@@ -14,7 +14,7 @@ fileInput.addEventListener("change", async () => {
   buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
-  downloadKey();
+  await downloadKey();
 
   if (fileInput.files.length === 0) {
     log("Please select a file to decompress.");
@@ -48,7 +48,7 @@ function log(message, overwriteLast = false) {
   consoleDiv.scrollTop = consoleDiv.scrollHeight;
 }
 
-const downloadKey = () => {
+const downloadKey = async () => {
   try {
     const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: salt, pwd: pwd }))], { type: "text/plain" });
     const url = URL.createObjectURL(content);
@@ -61,6 +61,8 @@ const downloadKey = () => {
     document.body.removeChild(a);
   
     URL.revokeObjectURL(url);
+
+    return new Promise(r => r);
   } catch (error) {
     console.error("Error generating Key file:", error);
   }
