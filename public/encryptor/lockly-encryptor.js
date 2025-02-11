@@ -75,7 +75,6 @@ async function encryptZip(file) {
   const four04HTML = btoa(await fetch("/404.html").then(r => r.text()));
 
   async function saveToZIP(file, path) {
-    console.log(path)
     await exportZip.file(path, file, { binary: true });
   }
   
