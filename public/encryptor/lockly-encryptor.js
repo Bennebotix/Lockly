@@ -1,4 +1,6 @@
 const salt = window.crypto.getRandomValues(new Uint8Array(16));
+const ogIV = window.crypto.getRandomValues(new Uint8Array(16));
+const IV = (v) => Object.values(ogIV).map(a => (a + v) % 255).reduce((a, c, i) => ({ ...a, [i]: c }), {})
 
 const fileInput = document.querySelector("#fileInput");
 const consoleDiv = document.querySelector("#console");
@@ -98,7 +100,7 @@ async function encryptZip(file) {
         try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
-          await saveToZIP(encryptedFile.encryptedData, '/data/' + relativePath);
+          await saveToZIP(encryptedFile, '/data/' + relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
         } catch (entryError) {
           log(`  - Error processing ${relativePath}: ${entryError.message}`);
@@ -146,16 +148,18 @@ async function encrypt(data, password) {
     ["encrypt"]
   );
 
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  console.log(aesKey)
+  console.log(data)
+
   const encryptedData = await crypto.subtle.encrypt(
     {
       name: "AES-GCM",
-      iv: iv,
+      iv: IV(0),
       tagLength: 128,
     },
     aesKey,
     data
   );
 
-  return { iv, salt, encryptedData };
+  return encryptedData;
 }
