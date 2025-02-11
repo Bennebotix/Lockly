@@ -14,6 +14,8 @@ fileInput.addEventListener("change", async () => {
   buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
+  downloadKey();
+
   if (fileInput.files.length === 0) {
     log("Please select a file to decompress.");
     return;
@@ -34,8 +36,6 @@ fileInput.addEventListener("change", async () => {
       log("Unsupported file type. ");
     }
   }
-
-  downloadKey();
 });
 
 function log(message, overwriteLast = false) {
