@@ -1,6 +1,15 @@
 self.addEventListener("message", (event) => {
   self.key = JSON.parse(atob(event.data.key));
+  log(self)
 });
+
+async function log(message) {
+  const clientsList = await clients.matchAll();
+
+  clientsList.forEach(client => {
+    client.postMessage(message);
+  });
+}
 
 self.addEventListener("fetch", (event) => {
   function reject() {
