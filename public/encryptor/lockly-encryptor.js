@@ -120,14 +120,14 @@ async function encryptZip(file) {
         let relativePath = relativePathFull.replace(buildDir, "");
         relativePath = relativePath.substring(relativePath.indexOf("/") + 1);
         log(`- Encrypting: ${relativePath}...`);
-        try {
+        //try {
           const entryData = await entry.async("uint8array");
           const encryptedFile = await encrypt(entryData, pwd);
           await saveToZIP(encryptedFile, '/data/' + relativePath);
           log(`  - ${relativePath} encrypted successfully.`);
-        } catch (entryError) {
-          log(`  - Error processing ${relativePath}: ${entryError.message}`);
-        }
+        //} catch (entryError) {
+          //log(`  - Error processing ${relativePath}: ${entryError.message}`);
+        //}
         processedEntries++;
         log(`Progress: ${processedEntries} of ${totalEntries}`);
       }
