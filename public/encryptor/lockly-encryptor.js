@@ -50,7 +50,7 @@ function log(message, overwriteLast = false) {
 
 const downloadKey = () => {
   try {
-    const content = new Blob([btoa({ iv: ogIV, salt: salt, pwd: pwd })]);
+    const content = new Blob([btoa({ iv: ogIV, salt: salt, pwd: pwd })], "text/txt");
     const url = URL.createObjectURL(content);
   
     const a = document.createElement("a");
