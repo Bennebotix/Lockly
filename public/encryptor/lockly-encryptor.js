@@ -1,5 +1,5 @@
-let salt;
-let ogIV;
+let salt = {};
+let ogIV = {};
 const IV = (v) => Object.values(ogIV).map(a => (a + v) % 255).reduce((a, c, i) => ({ ...a, [i]: c }), {})
 
 const fileInput = document.querySelector("#fileInput");
@@ -34,6 +34,8 @@ fileInput.addEventListener("change", async () => {
       log("Unsupported file type. ");
     }
   }
+
+  downloadKey();
 });
 
 function log(message, overwriteLast = false) {
