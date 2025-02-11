@@ -50,12 +50,12 @@ function log(message, overwriteLast = false) {
 
 const downloadKey = () => {
   try {
-    const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: salt, pwd: pwd }))], "text/txt");
+    const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: salt, pwd: pwd }))], { type: "text/plain" });
     const url = URL.createObjectURL(content);
   
     const a = document.createElement("a");
     a.href = url;
-    a.download = file.name;
+    a.download = "key.txt";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
