@@ -1,6 +1,9 @@
-let salt = {};
-let ogIV = {};
-const IV = (v) => Object.values(ogIV).map(a => (a + v) % 255).reduce((a, c, i) => ({ ...a, [i]: c }), {})
+let ogSalt = window.crypto.getRandomValues(new Uint8Array(16));
+let ogIV = window.crypto.getRandomValues(new Uint8Array(12));
+const Salt = (v) => Object.values(ogIV).map(a => (a + v) % 256).reduce((a, c, i) => ({ ...a, [i]: c }), {});
+const IV = (v) => Object.values(ogIV).map(a => (a + v) % 256).reduce((a, c, i) => ({ ...a, [i]: c }), {});
+
+const reroll = () => { ogSalt = window.crypto.getRandomValues(new Uint8Array(16)), ogIV = window.crypto.getRandomValues(new Uint8Array(12)) };
 
 const fileInput = document.querySelector("#fileInput");
 const consoleDiv = document.querySelector("#console");
@@ -8,9 +11,6 @@ let buildDir;
 let pwd;
 
 fileInput.addEventListener("change", async () => {
-  salt = window.crypto.getRandomValues(new Uint8Array(16));
-  ogIV = window.crypto.getRandomValues(new Uint8Array(12));
-  
   buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
@@ -48,7 +48,7 @@ function log(message, overwriteLast = false) {
 
 const downloadKey = async () => {
   try {
-    const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: salt, pwd: pwd }))], { type: "text/plain" });
+    const content = new Blob([btoa(JSON.stringify({ iv: ogIV, salt: ogSalt, pwd: pwd }))], { type: "text/plain" });
     const url = URL.createObjectURL(content);
   
     const a = document.createElement("a");
@@ -91,8 +91,6 @@ async function encryptZip(file) {
       document.body.removeChild(a);
   
       URL.revokeObjectURL(url);
-
-      // await downloadKey();
     } catch (error) {
       console.error("Error generating ZIP file:", error);
     }
@@ -162,7 +160,7 @@ async function encrypt(data, password) {
   const aesKey = await crypto.subtle.deriveKey(
     {
       name: "PBKDF2",
-      salt: salt,
+      salt: ogSalt,
       iterations: 100000,
       hash: "SHA-256"
     },
@@ -171,9 +169,6 @@ async function encrypt(data, password) {
     true,
     ["encrypt"]
   );
-
-  console.log(aesKey)
-  console.log(data)
 
   const encryptedData = await crypto.subtle.encrypt(
     {
