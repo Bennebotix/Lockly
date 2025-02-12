@@ -14,8 +14,6 @@ fileInput.addEventListener("change", async () => {
   buildDir = document.querySelector("#buildDir").value.replace("/", "");
   pwd = document.querySelector("#password").value;
 
-  await downloadKey();
-
   if (fileInput.files.length === 0) {
     log("Please select a file to decompress.");
     return;
@@ -93,6 +91,8 @@ async function encryptZip(file) {
       document.body.removeChild(a);
   
       URL.revokeObjectURL(url);
+
+      await downloadKey();
     } catch (error) {
       console.error("Error generating ZIP file:", error);
     }
