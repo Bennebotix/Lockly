@@ -92,7 +92,7 @@ async function encryptZip(file) {
   
       URL.revokeObjectURL(url);
 
-      await downloadKey();
+      // await downloadKey();
     } catch (error) {
       console.error("Error generating ZIP file:", error);
     }
